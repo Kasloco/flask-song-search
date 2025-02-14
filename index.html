@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Song Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input, button { margin: 10px; padding: 10px; font-size: 16px; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Spotify Song Search</h1>
+    <input type="text" id="artist" placeholder="Enter Artist Name">
+    <input type="text" id="song" placeholder="Enter Song Name">
+    <button onclick="searchSong()">Search</button>
+    <div id="results"></div>
+
+    <script>
+        function searchSong() {
+            let artist = document.getElementById("artist").value;
+            let song = document.getElementById("song").value;
+
+            if (!artist || !song) {
+                alert("Please enter both artist and song name!");
+                return;
+            }
+
+            fetch(`http://127.0.0.1:5000/search?artist=${encodeURIComponent(artist)}&song=${encodeURIComponent(song)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("results").innerHTML = `<p style="color:red;">${data.error}</p>`;
+                    return;
+                }
+
+                document.getElementById("results").innerHTML = `
+                    <h2>${data.track_name} - ${data.artist}</h2>
+                    <p><strong>Album:</strong> ${data.album}</p>
+                    <p><strong>Release Date:</strong> ${data.release_date}</p>
+                    <p><a href="${data.spotify_url}" target="_blank">Listen on Spotify</a></p>
+                    <p><a href="${data.lyrics_url}" target="_blank">View Lyrics</a></p>
+                    <p><audio controls><source src="${data.preview_url}" type="audio/mpeg">No preview available</audio></p>
+                `;
+            })
+            .catch(error => console.error("Error fetching song:", error));
+        }
+    </script>
+</body>
+</html>
