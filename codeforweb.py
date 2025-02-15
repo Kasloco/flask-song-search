@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 CORS(app)  # Allow frontend access
 
-# Load API keys from environment variables (or hardcode them)
+# Load API keys from environment variables
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "e944aa52c12b403d83c17f00e73bc6e9")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "59ee0aca4291405fb189bef1ace8aa2c")
@@ -29,6 +29,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
     client_id=SPOTIFY_CLIENT_ID,
     client_secret=SPOTIFY_CLIENT_SECRET
 ))
+
+@app.route("/")
+def home():
+    return "Flask app is running!"
 
 @app.route("/search", methods=["GET"])
 def search_song():
@@ -74,9 +78,6 @@ def get_lyrics(artist, song):
         return None
 
     return data["response"]["hits"][0]["result"]["url"]
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=10000)
